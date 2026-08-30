@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS-CORE // Methodology & Framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-obsidian: #080c10;
+            --panel-bg: #0d131a;
+            --panel-border: #212e3d;
+            --neon-cyan: #00f0ff;
+            --neon-teal: #00bcd4;
+            --neon-red: #ff3366;
+            --neon-yellow: #ffb700;
+            --neon-green: #00e676;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+        }
+
+        .hud-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .hud-title {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .formula-box {
+            background: #05080c;
+            border: 1px solid var(--neon-cyan);
+            padding: 20px;
+            border-radius: 4px;
+            font-size: 1.05rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+
+        .tier-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .tier-row:last-child { border-bottom: none; }
+
+        .nav-link-cyber { color: var(--text-muted); font-family: 'Orbitron'; font-size: 0.85rem; transition: color 0.2s; }
+        .nav-link-cyber:hover, .nav-link-cyber.active { color: var(--neon-cyan); }
+        
+        /* Ensures crisp visibility when text is highlighted */
+        ::selection {
+            background: var(--neon-cyan);
+            color: #080c10;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="container-fluid">
+        <!-- NAVIGATION BAR -->
+        <div class="hud-panel mb-4 p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 10px; height: 10px; background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan);"></div>
+                <h1 class="h6 m-0 fw-bold" style="letter-spacing: 2px;">AEGIS-CORE // SOC INTELLIGENCE</h1>
+            </div>
+            <div class="d-flex gap-4">
+                <a href="/" class="text-decoration-none nav-link-cyber">[+] DASHBOARD</a>
+                <a href="/about" class="text-decoration-none nav-link-cyber active">[#] METHODOLOGY</a>
+            </div>
+        </div>
+
+        <!-- HEADER -->
+        <div class="mb-4 hud-panel p-4">
+            <h3 class="h4 mb-2">ENTERPRISE ASSET CRITICALITY FRAMEWORK</h3>
+            <p style="color: var(--text-main); opacity: 0.9;" class="m-0 small">AEGIS-CORE is built upon industry-recognized risk management standards, primarily drawing from NIST SP 800-30 (Guide for Conducting Risk Assessments) and ISO/IEC 27005 information security risk management controls.</p>
+        </div>
+
+        <!-- CONTENT GRID -->
+        <div class="row g-4 mb-4">
+            <!-- MATH FORMULA -->
+            <div class="col-lg-6">
+                <div class="hud-panel p-4 h-100">
+                    <h5 class="hud-title mb-3">Mathematical Risk & Criticality Formula</h5>
+                    <p style="color: var(--text-main); opacity: 0.9;" class="small mb-3">Unlike simplistic matrix models, AEGIS-CORE calculates asset priority using a multi-variable tactical equation designed to reflect real-world infrastructure pressure:</p>
+                    <div class="formula-box text-center mb-4">
+                        Score = (Impact × 2) + (Likelihood × 1) + (RTO × 2) + (Exposure × 1)
+                    </div>
+                    <ul class="small ps-3 mb-0" style="color: var(--text-main);">
+                        <li class="mb-2"><strong style="color: var(--neon-cyan);">Impact (Weight: 2):</strong> Measures financial, operational, and reputational damage if the asset is compromised (Scale 1-5).</li>
+                        <li class="mb-2"><strong style="color: var(--neon-cyan);">Likelihood (Weight: 1):</strong> Evaluates threat actor probability and existing vulnerability frequency (Scale 1-5).</li>
+                        <li class="mb-2"><strong style="color: var(--neon-cyan);">RTO Urgency (Weight: 2):</strong> Recovery Time Objective constraint; how fast the organization collapses if offline (Scale 1-5).</li>
+                        <li><strong style="color: var(--neon-cyan);">Exposure (Weight: 1):</strong> Network visibility (e.g., Internet-facing perimeter vs. air-gapped internal enclave) (Scale 1-5).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TIER THRESHOLDS -->
+            <div class="col-lg-6">
+                <div class="hud-panel p-4 h-100">
+                    <h5 class="hud-title mb-3">Tier Threshold Hierarchy</h5>
+                    <p style="color: var(--text-main); opacity: 0.9;" class="small mb-3">Asset scores map directly into operational response tiers to govern enterprise triage and automated patching cycles:</p>
+                    <div class="hud-panel overflow-hidden">
+                        <div class="tier-row">
+                            <span style="color: var(--neon-red);" class="fw-bold">Tier 1 (Critical)</span>
+                            <span class="small" style="color: var(--text-main);">Score &ge; 26</span>
+                            <span class="small" style="color: var(--text-main); opacity: 0.9;">Immediate emergency remediation required.</span>
+                        </div>
+                        <div class="tier-row">
+                            <span style="color: var(--neon-yellow);" class="fw-bold">Tier 2 (High)</span>
+                            <span class="small" style="color: var(--text-main);">Score 20 – 25</span>
+                            <span class="small" style="color: var(--text-main); opacity: 0.9;">High priority containment and monitoring.</span>
+                        </div>
+                        <div class="tier-row">
+                            <span style="color: var(--neon-green);" class="fw-bold">Tier 3 (Medium)</span>
+                            <span class="small" style="color: var(--text-main);">Score 14 – 19</span>
+                            <span class="small" style="color: var(--text-main); opacity: 0.9;">Standard patching schedule.</span>
+                        </div>
+                        <div class="tier-row">
+                            <span style="color: var(--neon-cyan);" class="fw-bold">Tier 4-5 (Low/Info)</span>
+                            <span class="small" style="color: var(--text-main);">Score &lt; 14</span>
+                            <span class="small" style="color: var(--text-main); opacity: 0.9;">Routine background maintenance.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

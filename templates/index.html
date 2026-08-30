@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS-CORE // Tactical Security Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-obsidian: #080c10;
+            --panel-bg: #0d131a;
+            --panel-border: #212e3d;
+            --neon-cyan: #00f0ff;
+            --neon-teal: #00bcd4;
+            --neon-red: #ff3366;
+            --neon-yellow: #ffb700;
+            --neon-green: #00e676;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+        }
+
+        .hud-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .hud-title {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .stat-card { text-align: center; padding: 20px 10px; }
+        .stat-val {
+            font-size: 2.4rem; font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .table-dark-custom th {
+            color: var(--neon-cyan) !important;
+            border-bottom: 2px solid var(--panel-border);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            background-color: #0b1017 !important;
+            text-transform: uppercase;
+        }
+        .table-dark-custom td, .table-dark-custom tr {
+            background: transparent !important;
+            color: var(--text-main) !important;
+            border-color: var(--panel-border) !important;
+            vertical-align: middle;
+            font-size: 0.85rem;
+            transition: background-color 0.2s ease;
+        }
+        .table-dark-custom tbody tr:hover {
+            background-color: rgba(0, 240, 255, 0.03) !important;
+        }
+        .table-dark-custom tr.simulated-highlight {
+            background-color: rgba(255, 51, 102, 0.12) !important;
+            box-shadow: inset 3px 0 0 var(--neon-red);
+        }
+        .table-dark-custom tr.simulated-target {
+            background-color: rgba(0, 240, 255, 0.12) !important;
+            box-shadow: inset 3px 0 0 var(--neon-cyan);
+        }
+        .table-dark-custom small { color: var(--text-muted) !important; }
+
+        .badge-t1 { background: rgba(255, 51, 102, 0.15); color: var(--neon-red) !important; border: 1px solid rgba(255, 51, 102, 0.4); }
+        .badge-t2 { background: rgba(255, 183, 0, 0.15); color: var(--neon-yellow) !important; border: 1px solid rgba(255, 183, 0, 0.4); }
+        .badge-t3 { background: rgba(0, 230, 118, 0.15); color: var(--neon-green) !important; border: 1px solid rgba(0, 230, 118, 0.4); }
+        .badge-t4, .badge-t5 { background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan) !important; border: 1px solid rgba(0, 240, 255, 0.4); }
+
+        label { color: var(--text-muted) !important; font-size: 0.8rem; text-transform: uppercase; }
+        .form-control, .form-select {
+            background: #05080c !important;
+            border: 1px solid var(--panel-border) !important;
+            color: var(--text-main) !important;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .form-control:focus, .form-select:focus {
+            background: #05080c !important;
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.25) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-cyber {
+            background: transparent; border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-cyber:hover {
+            background: var(--neon-cyan); color: #080c10; box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+        }
+        .btn-cyber-danger { border-color: var(--neon-red); color: var(--neon-red); }
+        .btn-cyber-danger:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 12px rgba(255, 51, 102, 0.4); }
+
+        .drop-zone {
+            border: 2px dashed var(--panel-border);
+            background: rgba(13, 19, 26, 0.5);
+            padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.03);
+        }
+        
+        .nav-link-cyber { color: var(--text-muted); font-family: 'Orbitron'; font-size: 0.85rem; transition: color 0.2s; }
+        .nav-link-cyber:hover, .nav-link-cyber.active { color: var(--neon-cyan); }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="container-fluid">
+        <!-- NAVIGATION BAR -->
+        <div class="hud-panel mb-4 p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 10px; height: 10px; background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan);"></div>
+                <h1 class="h6 m-0 fw-bold" style="letter-spacing: 2px;">AEGIS-CORE // SOC INTELLIGENCE</h1>
+            </div>
+            <div class="d-flex gap-4">
+                <a href="/" class="text-decoration-none nav-link-cyber active">[+] DASHBOARD</a>
+                <a href="/about" class="text-decoration-none nav-link-cyber">[#] METHODOLOGY</a>
+            </div>
+        </div>
+
+        <!-- HEADER & ACTIONS -->
+        <div class="d-flex justify-content-between align-items-center mb-4 hud-panel p-3">
+            <div>
+                <h3 class="h5 m-0">TACTICAL CRITICALITY ENGINE</h3>
+                <small style="color: var(--text-muted);">ENTERPRISE ASSET RISK TOPOLOGY</small>
+            </div>
+            <button class="btn btn-cyber-danger btn-sm" onclick="flushData()">[!] FLUSH DATABASE</button>
+        </div>
+
+        <!-- METRICS ROW -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="hud-panel stat-card">
+                    <small style="color: var(--text-muted);" class="d-block mb-1">TOTAL ASSETS</small>
+                    <div id="stat-total" class="stat-val">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="hud-panel stat-card">
+                    <small style="color: var(--neon-red);" class="d-block mb-1">TIER 1 (CRITICAL)</small>
+                    <div id="stat-t1" class="stat-val" style="color: var(--neon-red) !important;">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="hud-panel stat-card">
+                    <small style="color: var(--neon-yellow);" class="d-block mb-1">TIER 2 (HIGH)</small>
+                    <div id="stat-t2" class="stat-val" style="color: var(--neon-yellow) !important;">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="hud-panel stat-card">
+                    <small style="color: var(--neon-green);" class="d-block mb-1">TIER 3+ (MED/LOW)</small>
+                    <div id="stat-other" class="stat-val" style="color: var(--neon-green) !important;">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="hud-panel p-3">
+                    <h5 class="hud-title mb-3">Criticality Distribution</h5>
+                    <div style="height: 220px;"><canvas id="scoreChart"></canvas></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="hud-panel p-3">
+                    <h5 class="hud-title mb-3">Tier Breakdown</h5>
+                    <div style="height: 220px;" class="d-flex justify-content-center"><canvas id="tierChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- CONTROLS & SIMULATOR -->
+            <div class="col-lg-4">
+                <!-- SIMULATOR MODULE -->
+                <div class="hud-panel p-3 mb-4">
+                    <h5 class="hud-title mb-3">Attack Path & Blast Radius Simulator</h5>
+                    <div class="mb-3">
+                        <select id="simAssetSelect" class="form-select form-select-sm" onchange="clearSimulationHighlights()">
+                            <option value="">Select Target Asset...</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-cyber btn-sm w-100 mb-3" onclick="runSimulation()">[⚡] SIMULATE BREACH CASCADE</button>
+                    <div id="simResult" class="small" style="color: var(--text-main); line-height: 1.5;"></div>
+                </div>
+
+                <!-- BULK UPLOAD -->
+                <div class="hud-panel p-3 mb-4">
+                    <h5 class="hud-title mb-3">Bulk File Ingestion (.txt / .csv)</h5>
+                    <div class="drop-zone rounded mb-2" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                        <small style="color: var(--neon-cyan);">[📁] Drop CSV/TXT file here<br>or click to browse</small>
+                        <input type="file" id="fileInput" class="d-none" accept=".csv,.txt" onchange="handleFileSelect(this.files[0])">
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small id="fileNameDisplay" style="color: var(--neon-green);"></small>
+                        <a href="#" onclick="downloadSampleTemplate(event)" class="small text-decoration-none" style="color: var(--neon-cyan);">[↓] Sample Template</a>
+                    </div>
+                </div>
+
+                <!-- MANUAL INGESTION -->
+                <div class="hud-panel p-3">
+                    <h5 class="hud-title mb-3">Manual Asset Ingestion</h5>
+                    <form id="assetForm">
+                        <div class="mb-2">
+                            <label class="form-label">Asset Name</label>
+                            <input type="text" id="name" class="form-control form-control-sm" required placeholder="e.g. VPN Gateway">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Category</label>
+                            <input type="text" id="category" class="form-control form-control-sm" required placeholder="e.g. Infrastructure">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Description</label>
+                            <input type="text" id="description" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Data Classification</label>
+                            <input type="text" id="data_class" class="form-control form-control-sm" required placeholder="e.g. Credentials">
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-3">
+                                <label class="form-label">Impact</label>
+                                <input type="number" id="impact" class="form-control form-control-sm" min="1" max="5" value="3" required>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label">Likelihood</label>
+                                <input type="number" id="likelihood" class="form-control form-control-sm" min="1" max="5" value="3" required>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label">RTO</label>
+                                <input type="number" id="rto" class="form-control form-control-sm" min="1" max="5" value="3" required>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label">Exposure</label>
+                                <input type="number" id="exposure" class="form-control form-control-sm" min="1" max="5" value="3" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Justification</label>
+                            <textarea id="justification" class="form-control form-control-sm" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-cyber w-100">[+] INGEST ASSET</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TABLE DISPLAY -->
+            <div class="col-lg-8">
+                <div class="hud-panel p-3">
+                    <h5 class="hud-title mb-3">Live Prioritization Matrix Table</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom">
+                            <thead>
+                                <tr>
+                                    <th>ASSET</th>
+                                    <th>CATEGORY</th>
+                                    <th>SCORES (I/L/R/E)</th>
+                                    <th>TOTAL</th>
+                                    <th>TIER</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assetTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.remove('dragover'); }));
+        dropZone.addEventListener('drop', (e) => {
+            if(e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files[0]);
+        });
+
+        function downloadSampleTemplate(e) {
+            e.preventDefault();
+            const csvContent = "AssetName,Category,Description,DataClassification,Impact,Likelihood,RTO,Exposure,Justification\nVPN Gateway,Network Infrastructure,Perimeter router,Credentials,4,4,4,5,Perimeter entry point\nPayment Gateway,Financials,Card processing engine,Financial Records,5,3,5,4,Direct customer funds";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", "sample_assets.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function handleFileSelect(file) {
+            if(!file) return;
+            document.getElementById('fileNameDisplay').innerText = `Selected: ${file.name}`;
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+            const result = await res.json();
+            alert(result.message);
+            fetchAssets();
+        }
+
+        let scoreChartInstance = null;
+        let tierChartInstance = null;
+        let lastSimulationData = null;
+
+        async function fetchAssets() {
+            const res = await fetch('/api/assets');
+            const data = await res.json();
+
+            const tbody = document.getElementById('assetTable');
+            tbody.innerHTML = '';
+            const simSelect = document.getElementById('simAssetSelect');
+            const currentSelectedSim = simSelect.value;
+            simSelect.innerHTML = '<option value="">Select Target Asset...</option>';
+
+            let t1 = 0, t2 = 0, other = 0;
+            let labels = [], scores = [];
+
+            data.forEach(a => {
+                if(a.tier.includes('Tier 1')) t1++;
+                else if(a.tier.includes('Tier 2')) t2++;
+                else other++;
+
+                labels.push(a.name);
+                scores.push(a.score);
+                simSelect.innerHTML += `<option value="${a.id}" ${a.id == currentSelectedSim ? 'selected' : ''}>${a.name} (${a.tier})</option>`;
+
+                let badgeClass = 'badge-t4';
+                if(a.tier.includes('Tier 1')) badgeClass = 'badge-t1';
+                else if(a.tier.includes('Tier 2')) badgeClass = 'badge-t2';
+                else if(a.tier.includes('Tier 3')) badgeClass = 'badge-t3';
+
+                tbody.innerHTML += `
+                    <tr id="row-asset-${a.id}">
+                        <td><strong>${a.name}</strong><br><small>${a.data_class}</small></td>
+                        <td>${a.category}</td>
+                        <td>${a.impact} / ${a.likelihood} / ${a.rto} / ${a.exposure}</td>
+                        <td class="fw-bold" style="color: var(--neon-cyan) !important;">${a.score}</td>
+                        <td><span class="badge ${badgeClass}">${a.tier}</span></td>
+                        <td><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteAsset(${a.id})">×</button></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('stat-total').innerText = data.length;
+            document.getElementById('stat-t1').innerText = t1;
+            document.getElementById('stat-t2').innerText = t2;
+            document.getElementById('stat-other').innerText = other;
+            renderCharts(labels, scores, t1, t2, other);
+
+            if(lastSimulationData) {
+                applySimulationHighlights(lastSimulationData);
+            }
+        }
+
+        async function runSimulation() {
+            const assetId = document.getElementById('simAssetSelect').value;
+            if(!assetId) { alert("Please select a target asset first."); return; }
+            const res = await fetch('/api/simulate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ asset_id: parseInt(assetId) })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                lastSimulationData = result;
+                applySimulationHighlights(result);
+
+                let html = `<div class="p-2 rounded" style="background: rgba(0, 240, 255, 0.03); border: 1px solid var(--panel-border);">`;
+                html += `<strong style="color: var(--neon-cyan);">Target Compromised:</strong> ${result.target.name}<br>`;
+                html += `<strong style="color: var(--neon-red);">Cascading Downstream Nodes:</strong> ${result.affected_count}<br>`;
+                html += `<strong style="color: var(--neon-yellow);">Aggregate Blast Score:</strong> ${result.total_blast_score}<br>`;
+                if(result.affected_count > 0) {
+                    html += `<ul class="mb-0 mt-2 ps-3 small text-muted">`;
+                    result.affected_nodes.forEach(n => { html += `<li>↳ ${n.name} <span style="color: var(--neon-cyan);">[Score: ${n.score}]</span></li>`; });
+                    html += `</ul>`;
+                }
+                html += `</div>`;
+                document.getElementById('simResult').innerHTML = html;
+            }
+        }
+
+        function applySimulationHighlights(result) {
+            clearSimulationHighlights();
+            const targetRow = document.getElementById(`row-asset-${result.target.id}`);
+            if(targetRow) targetRow.classList.add('simulated-target');
+
+            result.affected_nodes.forEach(n => {
+                const nodeRow = document.getElementById(`row-asset-${n.id}`);
+                if(nodeRow) nodeRow.classList.add('simulated-highlight');
+            });
+        }
+
+        function clearSimulationHighlights() {
+            document.querySelectorAll('.table-dark-custom tr').forEach(row => {
+                row.classList.remove('simulated-target', 'simulated-highlight');
+            });
+            document.getElementById('simResult').innerHTML = '';
+            lastSimulationData = null;
+        }
+
+        function renderCharts(labels, scores, t1, t2, other) {
+            if(scoreChartInstance) scoreChartInstance.destroy();
+            if(tierChartInstance) tierChartInstance.destroy();
+
+            Chart.defaults.color = '#8b949e';
+            Chart.defaults.font.family = 'JetBrains Mono';
+
+            scoreChartInstance = new Chart(document.getElementById('scoreChart').getContext('2d'), {
+                type: 'bar',
+                data: { 
+                    labels: labels, 
+                    datasets: [{ label: 'Risk Score', data: scores, backgroundColor: '#00f0ff', borderRadius: 2 }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        x: { grid: { color: '#212e3d' }, ticks: { font: { size: 10 } } }, 
+                        y: { grid: { color: '#212e3d' }, beginAtZero: true } 
+                    } 
+                }
+            });
+
+            tierChartInstance = new Chart(document.getElementById('tierChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { 
+                    labels: ['Tier 1', 'Tier 2', 'Tier 3+'], 
+                    datasets: [{ data: [t1, t2, other], backgroundColor: ['#ff3366', '#ffb700', '#00e676'], borderWidth: 0 }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        document.getElementById('assetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                data_class: document.getElementById('data_class').value,
+                impact: document.getElementById('impact').value,
+                likelihood: document.getElementById('likelihood').value,
+                rto: document.getElementById('rto').value,
+                exposure: document.getElementById('exposure').value,
+                justification: document.getElementById('justification').value
+            };
+            await fetch('/api/assets', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            document.getElementById('assetForm').reset();
+            fetchAssets();
+        });
+
+        async function deleteAsset(id) { await fetch(`/api/assets/${id}`, { method: 'DELETE' }); fetchAssets(); }
+        async function flushData() { if(confirm("Wipe database?")) { await fetch('/api/flush', { method: 'POST' }); fetchAssets(); } }
+
+        fetchAssets();
+    </script>
+</body>
+</html>
