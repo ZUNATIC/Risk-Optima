@@ -86,4 +86,4 @@ python3 app.py
 
 ## 👨‍💻 Author
 
-Engineered by **Umae Habiba (@ZUNATIC)**
+Engineered by **Umae Habiba (@ZUNATIC) & Waleed Ahmed (@Wal-eed440)**
