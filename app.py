@@ -1,6 +1,11 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import io
 
 app = Flask(__name__)
 DB_NAME = 'database.db'
@@ -69,6 +74,10 @@ def init_db():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/operations')
+def operations():
+    return render_template('operations.html')
 
 @app.route('/about')
 def about():
@@ -167,6 +176,61 @@ def simulate_attack():
         "affected_nodes": unique_affected,
         "total_blast_score": blast_score_sum
     })
+
+@app.route('/api/export/pdf', methods=['GET'])
+def export_pdf():
+    conn = get_db_connection()
+    assets = conn.execute('SELECT * FROM assets ORDER BY score DESC').fetchall()
+    conn.close()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'ReportTitle',
+        parent=styles['Heading1'],
+        fontName='Helvetica-Bold',
+        fontSize=18,
+        textColor=colors.HexColor('#003366'),
+        spaceAfter=6
+    )
+    subtitle_style = ParagraphStyle(
+        'ReportSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=10,
+        textColor=colors.HexColor('#555555'),
+        spaceAfter=15
+    )
+
+    elements.append(Paragraph("RiskOptima // Executive Risk Report", title_style))
+    elements.append(Paragraph("Generated via Tactical Criticality Engine (NIST SP 800-30 Standard)", subtitle_style))
+    elements.append(Spacer(1, 10))
+
+    table_data = [["Asset Name", "Category", "Data Class", "Score", "Tier"]]
+    for a in assets:
+        table_data.append([a['name'], a['category'], a['data_class'], str(a['score']), a['tier']])
+
+    t = Table(table_data, colWidths=[150, 110, 110, 50, 135])
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#003366')),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,0), 9),
+        ('BOTTOMPADDING', (0,0), (-1,0), 6),
+        ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#f9f9f9')),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#dddddd')),
+        ('FONTNAME', (0,1), (-1,-1), 'Helvetica'),
+        ('FONTSIZE', (0,1), (-1,-1), 8),
+    ]))
+
+    elements.append(t)
+    doc.build(elements)
+    buffer.seek(0)
+    
+    return send_file(buffer, as_attachment=True, download_name="RiskOptima_Executive_Risk_Report.pdf", mimetype='application/pdf')
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
