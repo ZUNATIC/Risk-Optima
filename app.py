@@ -255,7 +255,8 @@ def upload_file():
                 name, cat, desc, dclass, imp, lik, rto, exp = parts[0], parts[1], parts[2], parts[3], int(parts[4]), int(parts[5]), int(parts[6]), int(parts[7])
                 just = parts[8] if len(parts) > 8 else "Bulk Ingestion"
                 
-                score = (imp * 2) + (likelihood * 1) + (rto * 2) + (exposure * 1)
+                # Fixed: using 'lik' instead of undefined 'likelihood' variable
+                score = (imp * 2) + (lik * 1) + (rto * 2) + (exp * 1)
                 tier = calculate_tier(score)
                 
                 cursor.execute('''
